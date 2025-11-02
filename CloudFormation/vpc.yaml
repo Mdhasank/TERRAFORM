@@ -1,0 +1,86 @@
+Parameters:
+  VpcCIDR:
+    Type: String
+    Default: 10.0.0.0/16
+    Description: CIDR block for the VPC
+  Subnet1CidrBlock:
+    Type: String
+    Default: 10.0.1.0/24
+    Description: CIDR block for the subnet
+  Subnet2CidrBlock:
+    Type: String
+    Default: 10.0.2.0/24
+    Description: CIDR block for the subnet
+  Subnet1Name:
+    Type: String
+    Default: test-subnet-1
+    Description: Name for the subnet
+  Subnet2Name:
+    Type: String
+    Default: test-subnet-2
+    Description: Name for the subnet
+  InternetGatewayName:
+    Type: String
+    Default: MyVPC-IGW
+    Description: Name for the internet gateway
+
+
+Resources:
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: MySimpleVPC
+  Subnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: !Ref Subnet1CidrBlock
+      AvailabilityZone: "us-east-2a" 
+      Tags:
+        - Key: Name
+          Value: !Ref Subnet1Name
+  Subnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: !Ref Subnet2CidrBlock
+      Tags:
+        - Key: Name
+          Value: !Ref Subnet2Name
+ # -------------------------------
+  # Internet Gateway
+  # -------------------------------
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Ref InternetGatewayName
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref MyVPC
+      InternetGatewayId: !Ref InternetGateway
+
+Outputs:
+  VPCId:
+    Description: The ID of the created VPC
+    Value: !Ref MyVPC
+
+  Subnet1Id:
+    Description: ID of Subnet 1
+    Value: !Ref Subnet1
+
+  Subnet2Id:
+    Description: ID of Subnet 2
+    Value: !Ref Subnet2
+
+  InternetGatewayId:
+    Description: ID of Internet Gateway
+    Value: !Ref InternetGateway
